@@ -22,6 +22,9 @@
 
 ---
 
+<img width="1889" height="908" alt="Screenshot 2025-10-17 001736" src="https://github.com/user-attachments/assets/353c68af-c345-4873-88c6-bbf5b6fe5330" />
+
+---
 ## 📖 Table of Contents
 
 - [Overview](#-overview)
@@ -47,8 +50,7 @@
 - [Credits](#-credits)
 - [Links](#-links)
 
----
-
+----
 ## 🌟 Overview
 
 **FlowNest** is a comprehensive **DeFi platform** built on the **Flow blockchain**, offering seamless wallet integration, **NFT marketplace**, staking pools, and lending protocols. Designed for both beginners and advanced users, FlowNest provides a secure, fast, and user-friendly experience for managing digital assets.
@@ -963,3 +965,4 @@ Made with ❤️ by [Shriyash Soni](https://github.com/shriyashsoni)
 © 2025 FlowNest. All rights reserved.
 
 </div>
+
