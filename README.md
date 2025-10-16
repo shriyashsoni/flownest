@@ -1,3 +1,8 @@
+It sounds like you need the final, complete, correctly formatted text for your `README.md` file, provided as a single block that can be directly saved as that file.
+
+Here is the entire content, formatted as the markdown file itself:
+
+\`\`\``markdown
 <div align="center">
 
 # 🌊 FlowNest
@@ -144,6 +149,7 @@
 
 ### System Architecture
 
+\`\`\`mermaid
 graph TD
     A[Frontend: Next.js] --> B{API Routes: Next.js};
     B --> C(Flow Blockchain: Smart Contracts);
@@ -162,83 +168,359 @@ graph TD
         B3(Staking APIs)
         B4(Profile APIs)
     end
+\`\`\``
 
-##Component Structure
+### Component Structure
 
+\`\`\`
+app/
+├── (dashboard)/
+│   ├── wallet/
+│   ├── nft/
+│   ├── staking/
+│   ├── lending/
+│   └── profile/
+├── api/
+│   ├── flow/
+│   ├── transactions/
+│   ├── staking/
+│   └── marketplace/
+└── layout.tsx
 
-       app/
-    ├── (dashboard)/
-    │   ├── wallet/
-    │   ├── nft/
-    │   ├── staking/
-    │   ├── lending/
-    │   └── profile/
-    ├── api/
-    │   ├── flow/
-    │   ├── transactions/
-    │   ├── staking/
-    │   └── marketplace/
-    └── layout.tsx
+components/
+├── ui/              # shadcn/ui components
+├── wallet/          # Wallet-related components
+├── nft/             # NFT components
+├── staking/         # Staking components
+└── shared/          # Shared components
 
-    components/
-    ├── ui/              # shadcn/ui components
-    ├── wallet/          # Wallet-related components
-    ├── nft/             # NFT components
-    ├── staking/         # Staking components
-    └── shared/          # Shared components
+lib/
+├── flow/            # Flow blockchain utilities
+├── supabase/        # Supabase client
+└── utils/           # Helper functions
+\`\`\`
 
-    lib/
-    ├── flow/            # Flow blockchain utilities
-    ├── supabase/        # Supabase client
-    └── utils/           # Helper functions
- ---   
+-----
 
 ## 📜 Smart Contracts
-FlowFiStaking.cdc
-Contract Address (Testnet): 0x[PENDING_DEPLOYMENT]
 
-Purpose: Flexible staking protocol with multiple pools and lock periods.
+### FlowFiStaking.cdc
 
-Main Functions:
+**Contract Address (Testnet)**: `0x[PENDING_DEPLOYMENT]`
 
-       // Create a new staking pool
-     pub fun createPool(name: String, apy: UFix64, lockPeriod: UInt64): UInt64
+**Purpose**: Flexible staking protocol with multiple pools and lock periods.
 
-     // Stake tokens in a pool
-    pub fun stake(poolId: UInt64, amount: UFix64): UInt64
+**Main Functions**:
+
+\`\`\`cadence
+// Create a new staking pool
+pub fun createPool(name: String, apy: UFix64, lockPeriod: UInt64): UInt64
+
+// Stake tokens in a pool
+pub fun stake(poolId: UInt64, amount: UFix64): UInt64
+
+// Unstake tokens from a pool
+pub fun unstake(stakeId: UInt64)
+
+// Claim accumulated rewards
+pub fun claimRewards(stakeId: UInt64): UFix64
+\`\`\`
+
+**Deployment Command**:
+
+\`\`\`bash
+flow accounts add-contract FlowFiStaking ./cadence/contracts/FlowFiStaking.cdc --network=testnet --signer=testnet-account
+\`\`\`
+
+-----
+
+### FlowFiLending.cdc
+
+**Contract Address (Testnet)**: `0x[PENDING_DEPLOYMENT]`
+
+**Purpose**: NFT-collateralized lending protocol with dynamic interest rates.
+
+**Main Functions**:
+
+\`\`\`cadence
+// Supply assets to lending pool
+pub fun supply(amount: UFix64): UInt64
+
+// Borrow against NFT collateral
+pub fun borrow(amount: UFix64, collateralNFT: @NFT): UInt64
+
+// Repay loan
+pub fun repay(loanId: UInt64, amount: UFix64)
+
+// Withdraw supplied assets
+pub fun withdraw(supplyId: UInt64, amount: UFix64)
+
+// Liquidate under-collateralized loan
+pub fun liquidate(loanId: UInt64)
+\`\`\`
+
+**Deployment Command**:
+
+\`\`\`bash
+flow accounts add-contract FlowFiLending ./cadence/contracts/FlowFiLending.cdc --network=testnet --signer=testnet-account
+\`\`\`
+
+-----
+
+### Flow Standard Contracts (Testnet)
+
+| Contract | Address | Purpose | Documentation |
+|----------|---------|---------|---------------|
+| **FlowToken** | `0x7e60df042a9c0868` | Native FLOW token | [Docs](https://developers.flow.com/build/core-contracts/flow-token) |
+| **FungibleToken** | `0x9a0766d93b6608b7` | Fungible token standard | [Docs](https://developers.flow.com/build/core-contracts/fungible-token) |
+| **FUSD** | `0xe223d8a629e49c68` | Flow USD stablecoin | [Docs](https://www.google.com/search?q=https://developers.flow.com/build/core-contracts/fusd) |
+| **NFTStorefront** | `0x94b06cfca1d8a476` | NFT marketplace standard | [Docs](https://developers.flow.com/build/core-contracts/nft-storefront) |
+| **NonFungibleToken** | `0x631e88ae7f1d7c20` | NFT standard | [Docs](https://developers.flow.com/build/core-contracts/non-fungible-token) |
+
+-----
+
+## 🗄 Database Schema
+
+### Entity Relationship Diagram
+
+\`\`\`mermaid
+erDiagram
+    profiles ||--o{ wallets : "has"
+    profiles ||--o{ transactions : "performs"
+    profiles ||--o{ staking_positions : "holds"
+    profiles ||--o{ nfts : "owns"
+    profiles ||--o{ lending_positions : "has"
     
- # Deployment Command:
-    flow accounts add-contract FlowFiStaking ./cadence/contracts/FlowFiStaking.cdc --network=testnet --signer=testnet-account
----
+    profiles {
+        uuid id PK
+        text flow_address UK
+        text username
+    }
+    
+    wallets {
+        uuid id PK
+        uuid user_id FK
+        text token_symbol UK
+        numeric balance
+    }
+    
+    transactions {
+        uuid id PK
+        uuid user_id FK
+        text type
+        numeric amount
+    }
+    
+    staking_positions {
+        uuid id PK
+        uuid user_id FK
+        text pool_name
+        numeric amount
+    }
 
+    nfts {
+        uuid id PK
+        uuid user_id FK
+        text token_id UK
+        text collection_name UK
+    }
 
-    // Unstake tokens from a pool
-    pub fun unstake(stakeId: UInt64)
+    lending_positions {
+        uuid id PK
+        uuid user_id FK
+        text type
+        numeric amount
+    }
+\`\`\`
 
-    // Claim accumulated rewards
-    pub fun claimRewards(stakeId: UInt64): UFix64
----
-##FlowFiLending.cdc
-Contract Address (Testnet): 0x[PENDING_DEPLOYMENT]
+### Detailed Schema
 
-Purpose: NFT-collateralized lending protocol with dynamic interest rates.
+#### profiles
 
-Main Functions:
+\`\`\`sql
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  flow_address TEXT UNIQUE NOT NULL,
+  username TEXT,
+  display_name TEXT,
+  avatar_url TEXT,
+  bio TEXT,
+  theme TEXT DEFAULT 'dark' CHECK (theme IN ('light', 'dark')),
+  notification_tx_alerts BOOLEAN DEFAULT true,
+  notification_staking_alerts BOOLEAN DEFAULT true,
+  notification_price_alerts BOOLEAN DEFAULT false,
+  two_fa_enabled BOOLEAN DEFAULT false,
+  pin_hash TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
-    // Supply assets to lending pool
-    pub fun supply(amount: UFix64): UInt64
+CREATE INDEX idx_profiles_flow_address ON profiles(flow_address);
+CREATE INDEX idx_profiles_username ON profiles(username);
 
-    // Borrow against NFT collateral
-    pub fun borrow(amount: UFix64, collateralNFT: @NFT): UInt64
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+\`\`\`
 
-    // Repay loan
-    pub fun repay(loanId: UInt64, amount: UFix64)
+#### wallets
 
-    // Withdraw supplied assets
-    pub fun withdraw(supplyId: UInt64, amount: UFix64)
- 
-     // Liquidate under-collateralized loan
-     pub fun liquidate(loanId: UInt64)
+\`\`\`sql
+CREATE TABLE wallets (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+token_symbol TEXT NOT NULL,
+balance NUMERIC(20, 8) DEFAULT 0 CHECK (balance >= 0),
+usd_value NUMERIC(20, 2) DEFAULT 0,
+last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+UNIQUE(user_id, token_symbol)
+);
 
----
-##Flow Standard Contracts (Testnet)
+CREATE INDEX idx_wallets_user_id ON wallets(user_id);
+CREATE INDEX idx_wallets_token_symbol ON wallets(token_symbol);
+
+ALTER TABLE wallets ENABLE ROW LEVEL SECURITY;
+\`\`\`
+
+#### transactions
+
+\`\`\`sql
+CREATE TABLE transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('send', 'receive', 'stake', 'unstake', 'swap', 'buy_nft', 'sell_nft')),
+  amount NUMERIC(20, 8) NOT NULL,
+  from_token TEXT,
+  to_token TEXT,
+  recipient TEXT,
+  sender TEXT,
+  tx_hash TEXT UNIQUE,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'failed')),
+  usd_value NUMERIC(20, 2),
+  gas_fee NUMERIC(20, 8),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  confirmed_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE INDEX idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX idx_transactions_status ON transactions(status);
+CREATE INDEX idx_transactions_type ON transactions(type);
+CREATE INDEX idx_transactions_created_at ON transactions(created_at DESC);
+
+ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+\`\`\`
+
+#### staking\_positions
+
+\`\`\`sql
+CREATE TABLE staking_positions (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+pool_name TEXT NOT NULL,
+amount NUMERIC(20, 8) NOT NULL CHECK (amount > 0),
+apy NUMERIC(5, 2) NOT NULL CHECK (apy >= 0),
+rewards_earned NUMERIC(20, 8) DEFAULT 0,
+lock_period INTEGER NOT NULL CHECK (lock_period IN (30, 90, 180)),
+start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+status TEXT DEFAULT 'active' CHECK (status IN ('active', 'completed', 'withdrawn')),
+created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_staking_user_id ON staking_positions(user_id);
+CREATE INDEX idx_staking_status ON staking_positions(status);
+CREATE INDEX idx_staking_end_date ON staking_positions(end_date);
+
+ALTER TABLE staking_positions ENABLE ROW LEVEL SECURITY;
+\`\`\`
+
+#### nfts
+
+\`\`\`sql
+CREATE TABLE nfts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  token_id TEXT NOT NULL,
+  collection_name TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  image_url TEXT,
+  price NUMERIC(20, 8),
+  rarity TEXT CHECK (rarity IN ('Common', 'Rare', 'Epic', 'Legendary')),
+  attributes JSONB,
+  is_listed BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(token_id, collection_name)
+);
+
+CREATE INDEX idx_nfts_user_id ON nfts(user_id);
+CREATE INDEX idx_nfts_collection ON nfts(collection_name);
+CREATE INDEX idx_nfts_rarity ON nfts(rarity);
+CREATE INDEX idx_nfts_is_listed ON nfts(is_listed);
+
+ALTER TABLE nfts ENABLE ROW LEVEL SECURITY;
+\`\`\`
+
+-----
+
+## API Endpoints
+
+### Flow Blockchain APIs
+
+#### GET /api/flow/balance
+
+Get FLOW token balance for an address
+
+**Query Parameters**:
+
+\`\`\`typescript
+{
+  address: string // Flow address (0x...)
+}
+\`\`\`
+
+**Response**:
+
+\`\`\`json
+{
+  "balance": "123.45678900",
+  "address": "0x1234567890abcdef",
+  "timestamp": "2025-01-16T10:30:00Z"
+}
+\`\`\`
+
+**Example**:
+
+\`\`\`bash
+curl "[https://flowfiyour.vercel.app/api/flow/balance?address=0x1234567890abcdef](https://flowfiyour.vercel.app/api/flow/balance?address=0x1234567890abcdef)"
+\`\`\`
+
+-----
+
+#### GET /api/flow/account
+
+Get complete account information
+
+**Query Parameters**:
+
+\`\`\`typescript
+{
+  address: string
+}
+\`\`\`
+
+**Response**:
+
+\`\`\`json
+{
+  "address": "0x1234567890abcdef",
+  "balance": "123.45678900",
+  "code": "",
+  "contracts": {},
+  "keys": [
+    {
+      "index": 0,
+      "publicKey": "...",
+      "signAlgo": 2,
+      "hashAlgo": 3,
+      "weight": 1000,
+      "sequenceNumber":
